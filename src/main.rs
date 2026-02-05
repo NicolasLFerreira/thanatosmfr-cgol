@@ -1,3 +1,5 @@
+mod conway;
+use conway::*;
 use macroquad::prelude::*;
 
 const GRID_WIDTH: usize = 100;
@@ -35,15 +37,39 @@ async fn main() {
     seed(&mut cells, shape);
 
     // Simulation
+    let mut is_running = false;
     let mut tick_timer = 0.0f32;
     loop {
+        // time step
         let dt = get_frame_time();
         tick_timer += dt;
 
-        clear_background(WHITE);
+        // input stuff
+        let (mx, my) = mouse_position();
+        if is_mouse_button_pressed(MouseButton::Left) {
+            let nmy = ((my - (my % CELL_SIZE)) / CELL_SIZE) as usize;
+            let nmx = ((mx - (mx % CELL_SIZE)) / CELL_SIZE) as usize;
 
+            let index = idx(nmy, nmx);
+            let cur = cells[index];
+            cells[index] = !cur;
+        }
+
+        if is_key_pressed(KeyCode::Space){
+            is_running = !is_running;
+        }
+
+        // render
+        clear_background(WHITE);
         for y in 0..GRID_HEIGHT {
             for x in 0..GRID_WIDTH {
+                draw_rectangle(
+                    x as f32 * CELL_SIZE,
+                    y as f32 * CELL_SIZE,
+                    CELL_SIZE,
+                    CELL_SIZE,
+                    if (x + y) % 2 == 0 {RED} else {BLUE}
+                );
                 if cells[idx(y, x)] {
                     draw_rectangle(
                         x as f32 * CELL_SIZE,
@@ -56,96 +82,12 @@ async fn main() {
             }
         }
 
-        // cap tick rate
-        if tick_timer >= TICK_DURATION {
+        // actual sim run
+        if tick_timer >= TICK_DURATION && is_running {
             simulation(&mut cells);
             tick_timer = 0.0;
         }
 
         next_frame().await;
     }
-}
-
-fn seed(cells: &mut Grid, coords: Vec<Coord>) {
-    for (y, x) in coords {
-        cells[idx(y, x)] = true;
-    }
-}
-
-fn shape_translate(shape: Vec<Vec<bool>>, ay: usize, ax: usize) -> Vec<Coord> {
-    let mut coords: Vec<Coord> = Vec::new();
-    for y in 0..shape.len() {
-        for x in 0..shape[y].len() {
-            if shape[y][x] {
-                coords.push((y + ay, x + ax));
-            }
-        }
-    }
-
-    coords
-}
-
-// RULES:
-// 1. Any live cell with fewer than two live neighbours dies, as if by underpopulation.
-// 2. Any live cell with two or three live neighbours lives on to the next generation.
-// 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
-// 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-fn simulation(cells: &mut Grid) {
-    let current_state = cells.clone();
-
-    for y in 0..GRID_HEIGHT {
-        for x in 0..GRID_WIDTH {
-            let index = idx(y, x);
-            let is_alive = current_state[index];
-            let alive_neighbours = neighbours((y, x), &current_state)
-                .iter()
-                .filter(|&&(ny, nx)| current_state[idx(ny, nx)])
-                .count();
-
-            // Applies rule
-            cells[index] = match (is_alive, alive_neighbours) {
-                (true, 2..=3) => true,
-                (true, _) => false,
-                (false, 3) => true,
-                (false, _) => false,
-            };
-        }
-    }
-}
-
-fn neighbours(coord: Coord, cells: &Grid) -> Vec<Coord> {
-    let (y, x) = coord;
-    let y = y as i32;
-    let x = x as i32;
-
-    let mut neighbours: Vec<Coord> = Vec::new();
-
-    for dy in -1..=1 {
-        for dx in -1..=1 {
-            // Skip center
-            if dy == 0 && dx == 0 {
-                continue;
-            }
-
-            // Bound check
-            let ny = y + dy;
-            let nx = x + dx;
-            if ny < 0 || ny >= GRID_HEIGHT as i32 {
-                continue;
-            }
-            if nx < 0 || nx >= GRID_WIDTH as i32 {
-                continue;
-            }
-
-            neighbours.push((ny as usize, nx as usize))
-        }
-    }
-
-    neighbours
-}
-
-#[inline]
-// Row major
-fn idx(y: usize, x: usize) -> usize {
-    y * GRID_WIDTH + x
 }

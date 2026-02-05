@@ -4,11 +4,11 @@ use macroquad::prelude::*;
 
 const GRID_WIDTH: usize = 21 * 6;
 const GRID_HEIGHT: usize = 9 * 6;
-const CELL_SIZE: f32 = 16.0;
-const UI_WIDTH: f32 = 200.0;
-const GRID_WIDTH_PX: f32 = GRID_WIDTH as f32 * CELL_SIZE;
-const GRID_HEIGHT_PX: f32 = GRID_HEIGHT as f32 * CELL_SIZE;
-const TICK_DURATION: f32 = 0.1;
+const CELL_SIZE_PX: f32 = 16.0;
+const GRID_WIDTH_PX: f32 = GRID_WIDTH as f32 * CELL_SIZE_PX;
+const GRID_HEIGHT_PX: f32 = GRID_HEIGHT as f32 * CELL_SIZE_PX;
+const UI_WIDTH_PX: f32 = 200.0;
+const TICK_DURATION: f32 = 0.2;
 
 type Grid = Vec<bool>;
 type Coord = (usize, usize);
@@ -16,8 +16,8 @@ type Coord = (usize, usize);
 fn window_conf() -> Conf {
     Conf {
         window_title: String::from("Game of Life"),
-        window_width: (CELL_SIZE * GRID_WIDTH as f32 + UI_WIDTH) as i32,
-        window_height: CELL_SIZE as i32 * GRID_HEIGHT as i32,
+        window_width: (GRID_WIDTH_PX + UI_WIDTH_PX) as i32,
+        window_height: GRID_HEIGHT_PX as i32,
         window_resizable: false,
         fullscreen: false,
         ..Default::default()
@@ -83,10 +83,10 @@ async fn main() {
             for x in 0..GRID_WIDTH {
                 if show_grid {
                     draw_rectangle(
-                        x as f32 * CELL_SIZE,
-                        y as f32 * CELL_SIZE,
-                        CELL_SIZE,
-                        CELL_SIZE,
+                        x as f32 * CELL_SIZE_PX,
+                        y as f32 * CELL_SIZE_PX,
+                        CELL_SIZE_PX,
+                        CELL_SIZE_PX,
                         if (x + y) % 2 == 0 {
                             Color::new(0.92, 0.92, 0.92, 1.0)
                         } else {
@@ -96,10 +96,10 @@ async fn main() {
                 }
                 if cells[idx(y, x)] {
                     draw_rectangle(
-                        x as f32 * CELL_SIZE,
-                        y as f32 * CELL_SIZE,
-                        CELL_SIZE,
-                        CELL_SIZE,
+                        x as f32 * CELL_SIZE_PX,
+                        y as f32 * CELL_SIZE_PX,
+                        CELL_SIZE_PX,
+                        CELL_SIZE_PX,
                         BLACK,
                     );
                 }
@@ -110,8 +110,8 @@ async fn main() {
         draw_rectangle(
             GRID_WIDTH_PX,
             0.0,
-            UI_WIDTH,
-            GRID_HEIGHT as f32 * CELL_SIZE,
+            UI_WIDTH_PX,
+            GRID_HEIGHT as f32 * CELL_SIZE_PX,
             Color::new(0.8, 0.8, 0.8, 1.0),
         );
 
@@ -122,7 +122,7 @@ async fn main() {
         for (i, &label) in buttons.iter().enumerate() {
             let x = GRID_WIDTH_PX + button_margin;
             let y = i as f32 * (button_height + button_margin) + button_margin;
-            let w = UI_WIDTH - 2.0 * button_margin;
+            let w = UI_WIDTH_PX - 2.0 * button_margin;
             let h = button_height;
 
             draw_rectangle(x, y, w, h, Color::new(0.6, 0.6, 0.6, 1.0));
@@ -154,8 +154,8 @@ async fn main() {
 
 fn normalize_mouse(my: f32, mx: f32) -> (usize, usize) {
     (
-        ((my - (my % CELL_SIZE)) / CELL_SIZE) as usize,
-        ((mx - (mx % CELL_SIZE)) / CELL_SIZE) as usize,
+        ((my - (my % CELL_SIZE_PX)) / CELL_SIZE_PX) as usize,
+        ((mx - (mx % CELL_SIZE_PX)) / CELL_SIZE_PX) as usize,
     )
 }
 

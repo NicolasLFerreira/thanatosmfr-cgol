@@ -2,10 +2,12 @@ mod conway;
 use conway::*;
 use macroquad::prelude::*;
 
-const GRID_WIDTH: usize = 21*6;
-const GRID_HEIGHT: usize = 9*6;
-const CELL_SIZE: f32 = 16f32;
-const TICK_DURATION: f32 = 0.2;
+const GRID_WIDTH: usize = 21 * 6;
+const GRID_HEIGHT: usize = 9 * 6;
+const CELL_SIZE: f32 = 16.0;
+const UI_WIDTH: f32 = 200.0;
+const GRID_WIDTH_PX: f32 = GRID_WIDTH as f32 * CELL_SIZE;
+const TICK_DURATION: f32 = 0.1;
 
 type Grid = Vec<bool>;
 type Coord = (usize, usize);
@@ -13,7 +15,7 @@ type Coord = (usize, usize);
 fn window_conf() -> Conf {
     Conf {
         window_title: String::from("Game of Life"),
-        window_width: CELL_SIZE as i32 * GRID_WIDTH as i32,
+        window_width: (CELL_SIZE * GRID_WIDTH as f32 + UI_WIDTH) as i32,
         window_height: CELL_SIZE as i32 * GRID_HEIGHT as i32,
         window_resizable: false,
         fullscreen: false,
@@ -24,6 +26,9 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut cells: Grid = empty_grid();
+
+    // ui stuff
+    let buttons = vec!["Start/Stop (SPACE)", "Clear (C)", "Toggle Grid (G)"];
 
     // // Seeding
     // let glider: Vec<Vec<bool>> = vec![
@@ -47,14 +52,18 @@ async fn main() {
 
         // input stuff
         let (mx, my) = mouse_position();
-        if is_mouse_button_pressed(MouseButton::Left) {
-            let (nmy, nmx) = normalize_mouse(my, mx);
-            cells[idx(nmy, nmx)] = true;
-        }
+        if (mx >= 0.0 && mx < GRID_WIDTH as f32 * CELL_SIZE)
+            && (my >= 0.0 && my < GRID_HEIGHT as f32 * CELL_SIZE)
+        {
+            if is_mouse_button_pressed(MouseButton::Left) {
+                let (nmy, nmx) = normalize_mouse(my, mx);
+                cells[idx(nmy, nmx)] = true;
+            }
 
-        if is_mouse_button_pressed(MouseButton::Right) {
-            let (nmy, nmx) = normalize_mouse(my, mx);
-            cells[idx(nmy, nmx)] = false;
+            if is_mouse_button_pressed(MouseButton::Right) {
+                let (nmy, nmx) = normalize_mouse(my, mx);
+                cells[idx(nmy, nmx)] = false;
+            }
         }
 
         if is_key_pressed(KeyCode::Space) {
@@ -94,6 +103,42 @@ async fn main() {
                         CELL_SIZE,
                         BLACK,
                     );
+                }
+            }
+        }
+
+        // Draw UI panel
+        draw_rectangle(
+            GRID_WIDTH_PX,
+            0.0,
+            UI_WIDTH,
+            GRID_HEIGHT as f32 * CELL_SIZE,
+            Color::new(0.8, 0.8, 0.8, 1.0),
+        );
+
+        // Example buttons
+        let button_height = 50.0;
+        let button_margin = 10.0;
+
+        for (i, &label) in buttons.iter().enumerate() {
+            let x = GRID_WIDTH_PX + button_margin;
+            let y = i as f32 * (button_height + button_margin) + button_margin;
+            let w = UI_WIDTH - 2.0 * button_margin;
+            let h = button_height;
+
+            draw_rectangle(x, y, w, h, Color::new(0.6, 0.6, 0.6, 1.0));
+            draw_text(label, x + 10.0, y + 30.0, 20.0, BLACK);
+
+            // Detect click
+            if is_mouse_button_pressed(MouseButton::Left) {
+                let (mx, my) = mouse_position();
+                if mx >= x && mx <= x + w && my >= y && my <= y + h {
+                    match i {
+                        0 => is_running = !is_running,
+                        1 => cells = empty_grid(),
+                        2 => show_grid = !show_grid,
+                        _ => {}
+                    }
                 }
             }
         }

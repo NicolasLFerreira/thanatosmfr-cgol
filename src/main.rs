@@ -54,13 +54,13 @@ async fn main() {
         let (mx, my) = mouse_position();
         if (mx >= 0.0 && mx < GRID_WIDTH_PX) && (my >= 0.0 && my < GRID_HEIGHT_PX) {
             if (mx >= 0.0 && mx < GRID_WIDTH_PX) && (my >= 0.0 && my < GRID_HEIGHT_PX) {
-                if is_mouse_button_pressed(MouseButton::Left) && !is_panning {
+                if is_mouse_button_down(MouseButton::Left) && !is_panning {
                     let coord = screen_to_world(mx, my, camera_x, camera_y);
                     if !cells.contains(&coord) {
                         cells.insert(coord);
                     }
                 }
-                if is_mouse_button_pressed(MouseButton::Right) && !is_panning {
+                if is_mouse_button_down(MouseButton::Right) && !is_panning {
                     let coord = screen_to_world(mx, my, camera_x, camera_y);
                     cells.remove(&coord);
                 }

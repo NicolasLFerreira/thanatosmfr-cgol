@@ -6,6 +6,7 @@ use crate::thanatos_core::thanatos_core;
 use conway::*;
 use macroquad::prelude::*;
 use std::collections::HashSet;
+use std::time::Instant;
 
 // Differentiation viewport from grid dimensions purposedly JustInCase TM
 const VIEWPORT_WIDTH: usize = 21 * 6;
@@ -171,11 +172,9 @@ async fn main() {
             }
         }
 
-        // actual sim run
+        // runs logic
         if (tick_timer >= TICK_DURATION && is_running) || (step_once && !is_running) {
-            // Send configuration state to Thanatos to handle MFROC
-            thanatos_core(&cells);
-            simulation(&mut cells);
+            logical_step(&mut cells);
             tick_timer = 0.0;
             step_once = false;
         }
@@ -195,4 +194,20 @@ fn world_to_screen(world_x: i32, world_y: i32, cam_x: f32, cam_y: f32) -> (f32, 
         world_x as f32 * CELL_SIZE_PX + cam_x,
         world_y as f32 * CELL_SIZE_PX + cam_y,
     )
+}
+
+fn logical_step(mut configuration: &mut Grid) {
+    let mut start = Instant::now();
+
+    thanatos_core(&configuration);
+
+    let elapsed = start.elapsed();
+    println!("Thanatos: {:?}", elapsed);
+
+    start = Instant::now();
+
+    simulation(&mut configuration);
+
+    let elapsed = start.elapsed();
+    println!("Simulation: {:?}", elapsed);
 }

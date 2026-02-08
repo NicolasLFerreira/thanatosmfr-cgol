@@ -1,1 +1,2 @@
-pub mod simulation;
+mod conway;
+pub use conway::step;

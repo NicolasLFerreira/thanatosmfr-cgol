@@ -9,7 +9,7 @@ fn bench_simulation(c: &mut Criterion) {
 
     c.bench_function("conway", |b| {
         b.iter(|| {
-            conway::simulation::simulation(black_box(&input));
+            conway::step(black_box(&input));
         })
     });
 

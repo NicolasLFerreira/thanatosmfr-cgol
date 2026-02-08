@@ -3,7 +3,7 @@ use eframe::Renderer;
 use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
-use tmfroc::conway::simulation::*;
+use tmfroc::conway;
 use tmfroc::thanatos;
 use tmfroc::types::cell_configuration::CellConfiguration;
 use tmfroc::types::cell_coord::CellCoord;
@@ -44,7 +44,7 @@ fn run_logic(seed_cells: Vec<CellCoord>, shared: Arc<AtomicCell<Arc<CellConfigur
 
         // Step Conway simulation
         start = Instant::now();
-        let new_cconf = simulation(&cconf);
+        let new_cconf = conway::step(&cconf);
         cconf = new_cconf;
         let elapsed = start.elapsed();
         println!("Simulation: {:?}", elapsed);

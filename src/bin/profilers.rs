@@ -13,7 +13,7 @@ fn main() {
         .unwrap();
 
     for _ in 0..10_000 {
-        conway::simulation::simulation(&cconf);
+        conway::step(&cconf);
     }
 
     if let Ok(report) = guard.report().build() {

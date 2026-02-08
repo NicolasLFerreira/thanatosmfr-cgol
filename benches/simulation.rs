@@ -4,7 +4,7 @@ use tmfroc::conway;
 use tmfroc::types::cell_configuration::CellConfiguration;
 
 fn bench_simulation(c: &mut Criterion) {
-    let seed_cells = CellConfiguration::random_configuration(42, 50, 50, 0.4);
+    let seed_cells = CellConfiguration::random_configuration(42, 50, 50, 0.5);
     let input = CellConfiguration::with_seed_configuration(seed_cells);
 
     c.bench_function("conway", |b| {

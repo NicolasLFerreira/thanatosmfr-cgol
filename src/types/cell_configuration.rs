@@ -16,6 +16,12 @@ impl CellConfiguration {
         }
     }
 
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self {
+            internal_cells: HashSet::with_capacity(capacity),
+        }
+    }
+
     pub fn with_seed_configuration(seed_cells: Vec<CellCoord>) -> Self {
         Self {
             internal_cells: seed_cells.into_iter().collect(),
@@ -23,7 +29,7 @@ impl CellConfiguration {
     }
 }
 
-// Crud stuff
+// Interaction
 impl CellConfiguration {
     pub fn is_alive(&self, coord: CellCoord) -> bool {
         self.internal_cells.contains(&coord)
@@ -39,6 +45,10 @@ impl CellConfiguration {
 
     pub fn iter(&self) -> impl Iterator<Item = CellCoord> {
         self.internal_cells.iter().copied()
+    }
+
+    pub fn len(&self) -> usize {
+        self.internal_cells.len()
     }
 }
 

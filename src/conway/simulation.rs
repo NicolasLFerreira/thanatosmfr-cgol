@@ -1,6 +1,6 @@
 use crate::types::cell_configuration::CellConfiguration;
 use crate::types::cell_coord::CellCoord;
-use std::collections::HashMap;
+use fxhash::FxBuildHasher;
 
 #[rustfmt::skip]
 const NEIGHBOURS: [(i32, i32); 8] = [
@@ -10,7 +10,10 @@ const NEIGHBOURS: [(i32, i32); 8] = [
 ];
 
 pub fn simulation(cconf: &CellConfiguration) -> CellConfiguration {
-    let mut neighbours: HashMap<CellCoord, u8> = HashMap::new();
+    // pre-allocation helps a little bit with .entry() performance hits
+    // let mut neighbours: HashMap<CellCoord, u8> = HashMap::with_capacity(cconf.len() * 8);
+    let mut neighbours: hashbrown::HashMap<CellCoord, u8, FxBuildHasher> =
+        hashbrown::HashMap::with_capacity_and_hasher(cconf.len() * 8, FxBuildHasher::default());
 
     // neighbour calculation
     for ccoord in cconf.iter() {
@@ -20,7 +23,7 @@ pub fn simulation(cconf: &CellConfiguration) -> CellConfiguration {
         }
     }
 
-    let mut new_cconf = CellConfiguration::new();
+    let mut new_cconf = CellConfiguration::with_capacity(cconf.len() * 8);
 
     // apply survival rules
     for (coord, count) in neighbours {

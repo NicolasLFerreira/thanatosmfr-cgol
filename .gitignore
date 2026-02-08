@@ -1,2 +1,7 @@
+# IDE/compiler stuff
 /target
 .idea/
+
+# Profiling output
+profile.svg
+profile.csv

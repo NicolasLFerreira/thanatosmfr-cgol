@@ -1,3 +1,4 @@
+use std::hash::Hash;
 use std::ops::{Add, Sub};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -39,7 +40,7 @@ impl Add for CellCoord {
     }
 }
 
-impl Add<(i32, i32)> for CellCoord{
+impl Add<(i32, i32)> for CellCoord {
     type Output = Self;
 
     fn add(self, rhs: (i32, i32)) -> Self::Output {

@@ -1,2 +1,2 @@
-mod cell_configuration;
-mod cell_coord;
+pub mod cell_configuration;
+pub mod cell_coord;

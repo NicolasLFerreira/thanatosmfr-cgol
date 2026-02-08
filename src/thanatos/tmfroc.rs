@@ -1,9 +1,9 @@
-use crate::Grid;
 use crate::thanatos::canonical::compute_canonical;
+use crate::types::cell_configuration::CellConfiguration;
 use wyhash::wyhash;
 
 /// Heart of Thanatos: MFROC
-pub fn run(configuration: &Grid) {
+pub fn run(configuration: &CellConfiguration) {
     let canonical = compute_canonical(configuration);
     let hash = compute_hash(&canonical);
 

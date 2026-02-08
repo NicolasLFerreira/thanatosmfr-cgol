@@ -1,8 +1,8 @@
-use crate::Grid;
+use crate::types::cell_configuration::CellConfiguration;
 
 /// Computes the canonical representation of a given cell configuration, independent of rotation and mirroring.
 /// * `cells` - The original, absolute, non-normalized configuration
-pub fn compute_canonical(cells: &Grid) -> Vec<(u32, u32)> {
+pub fn compute_canonical(cells: &CellConfiguration) -> Vec<(u32, u32)> {
     // Converts to vec for easier handling
     let cells: Vec<_> = cells.iter().collect();
 
@@ -14,9 +14,9 @@ pub fn compute_canonical(cells: &Grid) -> Vec<(u32, u32)> {
     let mut min_x: i32 = i32::MAX;
     let mut min_y: i32 = i32::MAX;
 
-    for (x, y) in cells.iter() {
-        let x = *x;
-        let y = *y;
+    for ccoord in cells.iter() {
+        let x = ccoord.x;
+        let y = ccoord.y;
 
         // min
         if x < min_x {
@@ -34,9 +34,9 @@ pub fn compute_canonical(cells: &Grid) -> Vec<(u32, u32)> {
     let mut max_y: u32 = 0;
 
     // applies normalization
-    for (x, y) in cells.iter() {
-        let new_x = (x - min_x) as u32;
-        let new_y = (y - min_y) as u32;
+    for ccoord in cells.iter() {
+        let new_x = (ccoord.x - min_x) as u32;
+        let new_y = (ccoord.y - min_y) as u32;
 
         // Builds bounding box dimensions
         if max_x < new_x {

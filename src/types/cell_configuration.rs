@@ -1,5 +1,5 @@
-use crate::types::cell_coord::CellCoord;
 use std::collections::HashSet;
+use crate::types::cell_coord::CellCoord;
 
 pub struct CellConfiguration {
     internal_cells: HashSet<CellCoord>,
@@ -16,7 +16,7 @@ impl CellConfiguration {
 
 // Crud stuff
 impl CellConfiguration {
-    pub fn get(&self, coord: CellCoord) -> bool {
+    pub fn is_alive(&self, coord: CellCoord) -> bool {
         self.internal_cells.contains(&coord)
     }
 
@@ -28,7 +28,7 @@ impl CellConfiguration {
         self.internal_cells.remove(&coord);
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = &CellCoord> {
-        self.internal_cells.iter()
+    pub fn iter(&self) -> impl Iterator<Item = CellCoord> {
+        self.internal_cells.iter().copied()
     }
 }

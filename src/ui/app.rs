@@ -1,7 +1,9 @@
-use crate::{logical_step, Grid, CELL_SIZE_PX};
+use crate::types::cell_configuration::CellConfiguration;
+use crate::types::cell_coord::CellCoord;
+use crate::{CELL_SIZE_PX, logical_step};
 
 struct SimulationState {
-    cells: Grid,
+    cells: CellConfiguration,
     is_running: bool,
     step_once: bool,
 }
@@ -18,7 +20,7 @@ impl App {
             grid_pan: egui::Vec2::default(),
             show_grid: true,
             sim_state: SimulationState {
-                cells: Grid::new(),
+                cells: CellConfiguration::new(),
                 step_once: false,
                 is_running: false,
             },
@@ -57,7 +59,7 @@ impl eframe::App for App {
                 self.sim_state.step_once = true;
             }
             if ui.button("Clear").clicked() {
-                self.sim_state.cells = Grid::new();
+                self.sim_state.cells = CellConfiguration::new();
                 self.grid_pan = egui::Vec2::default();
             }
         });
@@ -89,11 +91,12 @@ impl eframe::App for App {
 
                 let x = ((click.x - center.x - self.grid_pan.x) / CELL_SIZE_PX).floor() as i32;
                 let y = ((click.y - center.y - self.grid_pan.y) / CELL_SIZE_PX).floor() as i32;
+                let ccoord = CellCoord::new(x, y);
 
                 if input.pointer.button_down(egui::PointerButton::Primary) {
-                    self.sim_state.cells.insert((x, y));
+                    self.sim_state.cells.spawn(ccoord);
                 } else if input.pointer.button_down(egui::PointerButton::Secondary) {
-                    self.sim_state.cells.remove(&(x, y));
+                    self.sim_state.cells.despawn(ccoord);
                 }
             }
 
@@ -129,8 +132,8 @@ impl eframe::App for App {
                 paint_cell(
                     &painter,
                     center,
-                    cell.0,
-                    cell.1,
+                    cell.x,
+                    cell.y,
                     self.grid_pan,
                     egui::Color32::BLACK,
                 );
@@ -140,7 +143,7 @@ impl eframe::App for App {
         // Sim run, uncapped rn
         if self.sim_state.is_running || self.sim_state.step_once {
             self.sim_state.step_once = false;
-            logical_step(&mut self.sim_state.cells);
+            self.sim_state.cells = logical_step(&self.sim_state.cells);
             ctx.request_repaint()
         }
     }

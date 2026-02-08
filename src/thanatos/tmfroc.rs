@@ -1,5 +1,5 @@
 use crate::Grid;
-use crate::canonical::compute_canonical;
+use crate::thanatos::canonical::compute_canonical;
 use wyhash::wyhash;
 
 /// Heart of Thanatos: MFROC

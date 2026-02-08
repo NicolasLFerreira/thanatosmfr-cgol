@@ -1,14 +1,13 @@
-mod canonical;
-mod conway_core;
-mod thanatos_core;
-mod ui_core;
+mod conway;
+mod thanatos;
+mod ui;
 
-use crate::thanatos_core::thanatos_core;
-use crate::ui_core::App;
-use conway_core::*;
+use conway::simulation::*;
 use eframe::Renderer;
 use std::collections::HashSet;
 use std::time::Instant;
+use thanatos::tmfroc::thanatos_core;
+use ui::app::App;
 
 const CELL_SIZE_PX: f32 = 16.0;
 type Coord = (i32, i32);

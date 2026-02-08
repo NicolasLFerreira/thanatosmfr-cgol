@@ -1,7 +1,8 @@
-use crate::CELL_SIZE_PX;
 use crate::types::cell_configuration::CellConfiguration;
 use crossbeam::atomic::AtomicCell;
 use std::sync::Arc;
+
+const CELL_SIZE_PX: f32 = 16.0;
 
 pub struct App {
     grid_pan: egui::Vec2,

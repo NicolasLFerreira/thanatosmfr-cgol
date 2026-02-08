@@ -1,19 +1,13 @@
-mod conway;
-mod thanatos;
-mod types;
-mod ui;
-
-use crate::types::cell_configuration::CellConfiguration;
-use crate::types::cell_coord::CellCoord;
-use conway::simulation::*;
 use crossbeam::atomic::AtomicCell;
 use eframe::Renderer;
 use std::sync::Arc;
 use std::thread;
 use std::time::Instant;
-use ui::app::App;
-
-const CELL_SIZE_PX: f32 = 16.0;
+use tmfroc::conway::simulation::*;
+use tmfroc::thanatos;
+use tmfroc::types::cell_configuration::CellConfiguration;
+use tmfroc::types::cell_coord::CellCoord;
+use tmfroc::ui::app::App;
 
 fn main() {
     let seed_cells: Vec<CellCoord> = vec![
@@ -35,7 +29,7 @@ fn main() {
 
 fn run_logic(seed_cells: Vec<CellCoord>, shared: Arc<AtomicCell<Arc<CellConfiguration>>>) {
     // Own the mutable working copy of the simulation state
-    let mut cconf = CellConfiguration::with_seed(seed_cells);
+    let mut cconf = CellConfiguration::with_seed_configuration(seed_cells);
 
     loop {
         let mut start = Instant::now();

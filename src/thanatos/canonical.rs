@@ -6,8 +6,6 @@ pub fn compute_canonical(cells: &CellConfiguration) -> Vec<(u32, u32)> {
     // Converts to vec for easier handling
     let cells: Vec<_> = cells.iter().collect();
 
-    println!("Source configuration: {:?}", cells);
-
     // FIRST STEP: FINDING BOUNDING BOX
     // VERY important, needs to be able to find the minimum rectangle that encompasses the alive cells.
     // This has to be in local space, so subtracting all values by min x and y.
@@ -89,8 +87,6 @@ pub fn compute_canonical(cells: &CellConfiguration) -> Vec<(u32, u32)> {
     }
 
     let canonical = ordered.iter().min().unwrap();
-
-    println!("Canonical configuration: {:?}", canonical);
 
     canonical.to_vec()
 }

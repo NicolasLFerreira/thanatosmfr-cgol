@@ -7,11 +7,9 @@ use wyhash::wyhash;
 pub fn run(configuration: &CellConfiguration) {
     let canonical = compute_canonical(configuration);
     let hash = compute_hash(&canonical);
-
-    println!("Hash: {hash}");
 }
 
-fn compute_hash(canonical: &Vec<(u32, u32)>) -> u128 {
+pub fn compute_hash(canonical: &Vec<(u32, u32)>) -> u128 {
     // seeding for hash halves
     const SEED_1: u64 = 2;
     const SEED_2: u64 = 3;

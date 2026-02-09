@@ -1,26 +1,28 @@
 use crate::mfrac::canonical::compute_canonical;
 use crate::persistence::Database;
-use crate::types::{CanonicalConfiguration, CellConfiguration};
+use crate::types::{CanonicalConfiguration, CellConfiguration, MfracOutcome, MfracStatus};
 use crate::utilities::bit_packing::pack_u64_u128;
 use wyhash::wyhash;
 
-pub fn process_mfrac(configuration: &CellConfiguration) {
+pub fn run_pipeline(configuration: &CellConfiguration) -> MfracStatus {
     let canonical = compute_canonical(configuration);
     let hash = compute_hash(&canonical);
 
     let cc = CanonicalConfiguration {
         hash,
         configuration: canonical,
-        next_hash: 0,
+        next_hash: 0, // todo
     };
 
     let db = Database::open();
 
-    if db.contains(hash) {
-        println!("Collapse!");
+    match db.contains(hash) {
+        true => Some(MfracOutcome::Collision(hash)),
+        false => {
+            db.insert(&cc);
+            None
+        }
     }
-
-    db.insert(&cc);
 }
 
 pub fn compute_hash(canonical: &Vec<u64>) -> u128 {

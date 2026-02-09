@@ -15,7 +15,7 @@ fn bench_simulation(c: &mut Criterion) {
 
     c.bench_function("mfrac", |b| {
         b.iter(|| {
-            thanatos::mfrac::process_mfrac(black_box(&input));
+            thanatos::mfrac::run_pipeline(black_box(&input));
         })
     });
 }

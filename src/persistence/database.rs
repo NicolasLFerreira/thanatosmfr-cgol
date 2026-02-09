@@ -1,6 +1,7 @@
 use crate::types::CanonicalConfiguration;
 use std::path::PathBuf;
 
+/// Wrapper for `sled::Db`
 pub struct Database {
     db: sled::Db,
 }

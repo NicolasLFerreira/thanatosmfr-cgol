@@ -3,4 +3,4 @@
 
 mod canonical;
 mod pipeline;
-pub use pipeline::process_mfrac;
+pub use pipeline::run_pipeline;

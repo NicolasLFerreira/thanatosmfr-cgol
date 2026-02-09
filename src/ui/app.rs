@@ -12,7 +12,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(cc: &eframe::CreationContext<'_>, feed: SimulationFeed) -> Self {
+    pub fn new(_cc: &eframe::CreationContext<'_>, feed: SimulationFeed) -> Self {
         Self {
             grid_pan: egui::Vec2::default(),
             show_grid: false,
@@ -23,7 +23,7 @@ impl App {
 }
 
 impl eframe::App for App {
-    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         let payload = self.sim_feed.take();
         if let Some(cconf) = &payload.cconf {
             self.cconf = cconf.clone();

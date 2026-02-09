@@ -21,6 +21,3 @@ criterion = "0.8.2"
 [[bench]]
 name = "simulation"
 harness = false
-
-[target.x86_64-pc-windows-gnu]
-rustflags = ["-C", "target-feature=+crt-static"]

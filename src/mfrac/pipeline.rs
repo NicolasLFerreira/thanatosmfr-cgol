@@ -4,7 +4,7 @@ use wyhash::wyhash;
 
 pub fn process_mfrac(configuration: &CellConfiguration) {
     let canonical = compute_canonical(configuration);
-    let hash = compute_hash(&canonical);
+    let _hash = compute_hash(&canonical);
 }
 
 pub fn compute_hash(canonical: &Vec<(u32, u32)>) -> u128 {

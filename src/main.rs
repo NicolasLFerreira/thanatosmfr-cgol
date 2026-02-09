@@ -20,7 +20,7 @@ fn main() {
         CellCoord::new(2, 1),
     ];
 
-    let seed_cells = CellConfiguration::random_configuration(42, 20, 20, 0.3);
+    let _seed_cells = CellConfiguration::random_configuration(42, 20, 20, 0.3);
     let feed = Arc::new(AtomicCell::new(Arc::new(SimulationPayload::default())));
 
     // Simulation thread

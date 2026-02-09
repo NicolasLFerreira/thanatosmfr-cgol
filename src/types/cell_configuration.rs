@@ -27,9 +27,9 @@ impl CellConfiguration {
         }
     }
 
-    pub fn with_seed_configuration(seed_cells: Vec<CellCoord>) -> Self {
+    pub fn from_soup(soup: Vec<CellCoord>) -> Self {
         Self {
-            internal_cells: seed_cells.into_iter().collect(),
+            internal_cells: soup.into_iter().collect(),
         }
     }
 }
@@ -59,7 +59,7 @@ impl CellConfiguration {
 
 // Utility
 impl CellConfiguration {
-    pub fn random_configuration(
+    pub fn cook_soup(
         seed: u64,
         width: usize,
         height: usize,

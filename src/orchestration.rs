@@ -42,18 +42,12 @@ fn state_machine(
     uncapped: bool,
 ) {
     for i in 0..max_run_count {
-        // Input for a given run
-        let seed_cells = CellConfiguration::random_configuration(i as u64, 5, 5, 0.4);
+        let soup = CellConfiguration::cook_soup(i as u64, 5, 5, 0.4);
 
         println!("\n#-Starting Run {i}");
 
         // Runs the simulation and retrieves the MFRAC outcome
-        let outcome = simulation_run(
-            Arc::clone(&feed),
-            seed_cells,
-            max_generation_count,
-            uncapped,
-        );
+        let outcome = simulation_run(Arc::clone(&feed), soup, max_generation_count, uncapped);
 
         println!("|Run finished.");
 
@@ -79,7 +73,7 @@ fn simulation_run(
     max_generation_count: u32,
     uncapped: bool,
 ) -> MfracOutcome {
-    let mut cconf = CellConfiguration::with_seed_configuration(seed_cells);
+    let mut cconf = CellConfiguration::from_soup(seed_cells);
     for _ in 0..max_generation_count {
         // Run Thanatos on current configuration
         let option = mfrac::run_pipeline(&cconf);

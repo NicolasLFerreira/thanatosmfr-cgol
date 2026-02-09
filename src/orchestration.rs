@@ -1,6 +1,8 @@
-use crate::types::{CellConfiguration, CellCoord, MfracOutcome, SimulationFeed, SimulationPayload};
+use crate::types::{
+    CellConfiguration, CellCoord, MfracOutcome, MfracTerminationReason, SimulationFeed,
+    SimulationPayload,
+};
 use crate::{conway, mfrac};
-use std::cmp::max;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
@@ -8,7 +10,8 @@ use std::time::Duration;
 #[derive(Default, Copy, Clone)]
 pub struct SimulationParameters {
     pub blocking: bool,
-    pub max_iteration_count: u64,
+    pub uncapped: bool,
+    pub max_run_count: u32,
 }
 
 pub struct SimulationOrchestration {
@@ -23,22 +26,20 @@ impl SimulationOrchestration {
     pub fn start(&self, params: SimulationParameters) {
         let handle = {
             let clone = Arc::clone(&self.sim_feed);
-            thread::spawn(move || Self::state_machine(clone, params.max_iteration_count))
+            thread::spawn(move || Self::state_machine(clone, params.max_run_count, params.uncapped))
         };
 
-        if params.blocking {
+        if params.uncapped {
             handle.join().unwrap();
         }
     }
 
-    fn state_machine(feed: SimulationFeed, mut max_iteration: u64) {
-        if max_iteration == 0 {
-            max_iteration = 1_000;
-        }
+    fn state_machine(feed: SimulationFeed, mut max_iteration: u32, uncapped: bool) {
+        let max_iteration = 20;
 
         for i in 0..max_iteration {
-            let seed_cells = CellConfiguration::random_configuration(i, 5, 5, 0.3);
-            let outcome = Self::simulation_run(seed_cells, Arc::clone(&feed));
+            let seed_cells = CellConfiguration::random_configuration(i as u64, 5, 5, 0.4);
+            let outcome = Self::simulation_run(seed_cells, Arc::clone(&feed), uncapped);
 
             println!("Run {i} finished.");
 
@@ -46,14 +47,24 @@ impl SimulationOrchestration {
                 MfracOutcome::Collision(hash) => {
                     println!("Collided with: {}", hash);
                 }
-                MfracOutcome::Termination(_) => {}
+                MfracOutcome::Termination(reason) => match reason {
+                    MfracTerminationReason::LimitExceeded(limit) => {
+                        println!("Limit exceeded: {limit}");
+                    }
+                    MfracTerminationReason::StaleLife => {}
+                    MfracTerminationReason::Oscillator => {}
+                },
             }
         }
     }
 
-    fn simulation_run(seed_cells: Vec<CellCoord>, feed: SimulationFeed) -> MfracOutcome {
+    fn simulation_run(
+        seed_cells: Vec<CellCoord>,
+        feed: SimulationFeed,
+        uncapped: bool,
+    ) -> MfracOutcome {
         let mut cconf = CellConfiguration::with_seed_configuration(seed_cells);
-        loop {
+        for i in 0..10_000 {
             // Run Thanatos on current configuration
             let option = mfrac::run_pipeline(&cconf);
             if let Some(outcome) = option {
@@ -68,7 +79,11 @@ impl SimulationOrchestration {
             feed.store(Arc::new(SimulationPayload::new(Some(cconf.clone()))));
 
             // Currently capping for UI and development
-            thread::sleep(Duration::from_millis(100));
+            if !uncapped {
+                thread::sleep(Duration::from_millis(100));
+            }
         }
+
+        MfracOutcome::Termination(MfracTerminationReason::LimitExceeded(10_000))
     }
 }

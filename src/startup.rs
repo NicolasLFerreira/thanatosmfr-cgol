@@ -5,15 +5,25 @@ use crossbeam::atomic::AtomicCell;
 use eframe::Renderer;
 use std::sync::Arc;
 
+pub struct StartupParameters {
+    pub run_headless: bool,
+    pub max_runs: u32,
+}
+
 /// Sets up the different parts of the program
-pub fn startup() {
+pub fn startup(parameters: StartupParameters) {
     let feed = Arc::new(AtomicCell::new(Arc::new(SimulationPayload::default())));
     let so = SimulationOrchestration::new(Arc::clone(&feed));
+
     so.start(SimulationParameters {
-        max_iteration_count: 20,
+        max_run_count: parameters.max_runs,
         blocking: false,
+        uncapped: parameters.run_headless,
     });
-    start_ui(Arc::clone(&feed));
+
+    if !parameters.run_headless {
+        start_ui(Arc::clone(&feed));
+    }
 }
 
 fn start_ui(feed: SimulationFeed) {

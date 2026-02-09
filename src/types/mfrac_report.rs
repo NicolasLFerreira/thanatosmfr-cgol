@@ -6,6 +6,7 @@ pub enum MfracOutcome {
 }
 
 pub enum MfracTerminationReason {
+    LimitExceeded(u64),
     StaleLife,
     Oscillator,
 }

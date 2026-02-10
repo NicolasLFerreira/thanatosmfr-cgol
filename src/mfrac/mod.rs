@@ -2,5 +2,7 @@
 //! It provides a single public API `process_mfrac` for processing through its internal pipeline.
 
 mod canonical;
-mod pipeline;
-pub use pipeline::run_pipeline;
+mod mfrac;
+mod hash;
+
+pub use mfrac::Mfrac;

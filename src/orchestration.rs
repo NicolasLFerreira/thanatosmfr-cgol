@@ -1,3 +1,4 @@
+use crate::mfrac::Mfrac;
 use crate::types::{
     CellConfiguration, CellCoord, MfracOutcome, MfracTerminationReason, SimulationFeed,
     SimulationPayload,
@@ -74,9 +75,10 @@ fn simulation_run(
     uncapped: bool,
 ) -> MfracOutcome {
     let mut cconf = CellConfiguration::from_soup(soup);
+    let mut mfrac = Mfrac::init();
     for _ in 0..max_generation_count {
         // Run Thanatos on current configuration
-        let option = mfrac::run_pipeline(&cconf);
+        let option = mfrac.run_pipeline(&cconf);
         if let Some(outcome) = option {
             return outcome;
         }

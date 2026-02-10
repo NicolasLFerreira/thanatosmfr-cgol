@@ -1,6 +1,6 @@
 use crate::persistence::Database;
 use crate::types::SimulationFeed;
-use crate::types::{CanonicalConfiguration, CellConfiguration};
+use crate::types::{ConfigurationChainNode, CellConfiguration};
 use std::time::Duration;
 
 const CELL_SIZE_PX: f32 = 16.0;
@@ -11,7 +11,7 @@ pub struct App {
     sim_feed: SimulationFeed,
     cconf: CellConfiguration,
     input_buffer: String,
-    can_conf: CanonicalConfiguration,
+    can_conf: ConfigurationChainNode,
 }
 
 impl App {
@@ -22,7 +22,7 @@ impl App {
             sim_feed: feed,
             cconf: CellConfiguration::default(),
             input_buffer: String::default(),
-            can_conf: CanonicalConfiguration::default(),
+            can_conf: ConfigurationChainNode::default(),
         }
     }
 }

@@ -1,4 +1,4 @@
-use crate::types::CanonicalConfiguration;
+use crate::types::ConfigurationChainNode;
 use std::path::PathBuf;
 
 /// Wrapper for `sled::Db`
@@ -13,7 +13,7 @@ impl Database {
         }
     }
 
-    pub fn get(&self, hash: u128) -> Option<CanonicalConfiguration> {
+    pub fn get(&self, hash: u128) -> Option<ConfigurationChainNode> {
         let key = hash.to_be_bytes().to_vec();
         self.db
             .get(key)
@@ -21,7 +21,7 @@ impl Database {
             .map(|v| postcard::from_bytes(&v).unwrap())
     }
 
-    pub fn insert(&self, canonical_configuration: &CanonicalConfiguration) {
+    pub fn insert(&self, canonical_configuration: &ConfigurationChainNode) {
         let key = canonical_configuration.hash.to_be_bytes();
         let value = postcard::to_allocvec(&canonical_configuration).unwrap();
         self.db.insert(key, value).unwrap();

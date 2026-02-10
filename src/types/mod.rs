@@ -9,7 +9,7 @@ mod simulation_payload;
 mod simulation_state;
 
 // Re-exports for a flattened API
-pub use canonical_configuration::CanonicalConfiguration;
+pub use canonical_configuration::ConfigurationChainNode;
 pub use cell_configuration::CellConfiguration;
 pub use cell_coord::CellCoord;
 pub use mfrac_report::*;
